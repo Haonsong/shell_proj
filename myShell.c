@@ -10,6 +10,6 @@ int main()
 
 	while ()
 	{
-
+cout <<"ls\tdate\thelp\texit\n"
 	}
 }
