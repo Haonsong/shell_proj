@@ -14,7 +14,7 @@
 #endif
 
 // Divide the string command into command and arguments
-char ** read_CMD(char * command);
+char ** read_CMD(char * );
 
 // Get the whole line of command with its arguments as a string
 char * get_CMD();
