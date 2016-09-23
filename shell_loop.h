@@ -3,15 +3,23 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #ifndef CMD_MAX_LEN
-#define CMD_MAX_LEN 5
+#define CMD_MAX_LEN 2048
 #endif
 
+#ifndef ARGU_MAX_NUM
+#define ARGU_MAX_NUM 10
+#endif
+
+// Divide the string command into command and arguments
+char ** read_CMD(char * command);
+
+// Get the whole line of command with its arguments as a string
+char * get_CMD();
 
 // Here is the loop keep printing "myshell>" & deal with the command and its arguments
-char * read_CMD(char * command);
-char * get_CMD();
 void shell_loop();
 
 
