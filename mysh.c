@@ -5,11 +5,11 @@
 #include <unistd.h>
 #include <error.h> // this libary defines the integer variable 'errno'
 
-#define CMD_MAX_LENGTH 512
+#define CMD_MAX_LENGTH 512 // requirement 512 + NULL = 513
 
 int printError(){
 	char error message[30] = "An error has occurrednn";
-  write(STDERR FILENO, error message, strlen(error message));
+  write(STDERRFILENO, error message, strlen(error message));
 	return 0;
 }
 
@@ -40,9 +40,9 @@ int main(int argc, char *agrv[])
 				if(!arg){
 					// if no agrument, the working directory should be changed to
 					// the path stored in $HOME environment variable
-					getenv("HOME");
+					getenv("HOME"); //can use
 				} else {
-					chdir(arg);
+					chdir(arg); //can use
 				}
 		  } else if (strcmp(input, "pwd")==0){ // built-in: pwd
 				getcwd();
@@ -91,4 +91,3 @@ int main(int argc, char *agrv[])
 
 	return 0;
 }
-
