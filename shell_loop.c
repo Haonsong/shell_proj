@@ -6,10 +6,10 @@ char ** read_CMD(char * command_in_string){
     int cur_position = 0;
     char * space = " ";
     char * phaser = strtok(command_in_string,space);
-    char ** command = (char **) malloc( ARGU_MAX_NUM * sizeof(char *));
-
+    char ** arguments = (char **) malloc( (ARGU_MAX_NUM + 1) * sizeof(char *));
+    char * command_temp;
     // Make sure command array is successfully created
-    if ( !command ){
+    if ( !arguments ){
         fprintf(stderr, "Can't malloc space for phasing command" );
         exit(1);
     }
@@ -17,22 +17,27 @@ char ** read_CMD(char * command_in_string){
     // Read through command_in_string get the command and argus out
     while(phaser != NULL){
 
-        if(cur_position >= ARGU_MAX_NUM - 2){
+        if(cur_position >= ARGU_MAX_NUM - 1){
             fprintf(stderr, "Number of arguments exceeding limitation: %d", ARGU_MAX_NUM - 2);
             exit(1);
         }
-
-        command[cur_position] = phaser;
+        if (cur_position == 0) {
+            command_temp = phaser;
+        }else{
+            arguments[cur_position-1] = phaser;
+        }
         phaser = strtok(NULL, space);
         cur_position++ ;
     }
-    command[cur_position] = NULL;
+
+    arguments[cur_position-1] = NULL;
+    strcpy(command_in_string, command_temp);
     // free(command_in_string);
-    return command;
+    return arguments;
 }
 
 char * get_CMD(){
-    char * command = (char *) malloc(CMD_MAX_LEN* sizeof(char));
+    char * command = (char *) malloc((CMD_MAX_LEN + 1) * sizeof(char));
     int position = 0;
     // Test the malloc is successful or not
     if (!command){
@@ -41,7 +46,7 @@ char * get_CMD(){
     }
 
     // Get every char in line
-    while(position < CMD_MAX_LEN - 2){
+    while(position < CMD_MAX_LEN - 1){
         char c = getchar();
 
         // Reach the end of line
@@ -63,19 +68,29 @@ char * get_CMD(){
 
 void shell_loop() {
     // char * command = (char *) malloc(CMD_MAX_LEN* sizeof(char));
-    printf("myshell>");
-    char * input  = get_CMD();
-    printf("Got command: %s\n",input );
-    char ** command = read_CMD(input);
+    while(1)
+    {
+        printf("mysh>");
+        char * command  = get_CMD();
 
-    // testing the cmd reader
-    int position = 0;
-    while(command[position] != NULL){
-        printf("%d.%s\n",position +1,command[position] );
-        position++;
+        char ** argus = read_CMD(command);
+
+        // execute the command
+
+        int buildin = buildin_exec(command, argus);
+        // testing the cmd reader
+        printf("Got command: %s build-in?: %d\n",command, buildin );
+        int position = 0;
+        while(argus[position] != NULL){
+            printf("%d.%s\n",position +1,argus[position] );
+            position++;
+        }
+
+        // while (position > -1){
+        //     free (argus[position] );
+        //     position--;
+        // }
+        free(argus);
+        free(command);
     }
-
-
-    free(input);
-    free(command);
 }

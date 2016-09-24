@@ -1,8 +1,11 @@
 #ifndef BUILDIN_EXEC_H_
 #define BUILDIN_EXEC_H_
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
-void buildin_exe (char * , char ** );
+int buildin_exec (char * , char ** );
 
 #endif

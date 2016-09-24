@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "buildin_exec.h"
 
 #ifndef CMD_MAX_LEN
 #define CMD_MAX_LEN 2048
