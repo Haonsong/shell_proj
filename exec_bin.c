@@ -1,6 +1,9 @@
 #include "exec_bin.h"
 
+
+
 int exec_bin( char ** argus){
+    int output_file = 0;
 
     pid_t pid;
 
@@ -16,6 +19,8 @@ int exec_bin( char ** argus){
             // return 1;
         }
         exit(0);
+    }else{
+        
     }
     wait(NULL);
     // exit(0);

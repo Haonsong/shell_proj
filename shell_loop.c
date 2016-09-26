@@ -1,7 +1,7 @@
 
 #include "shell_loop.h"
 int background = 0;
-int output_file = 0;
+
 
 // Fun feature for python
 
@@ -9,21 +9,14 @@ void python_adder(char ** argus){
     if(argus[1] == NULL){
         char * py_copy = (char*) malloc(100*sizeof(char));
         strcpy(py_copy,argus[0]);
-        // printf("Py_copy %s\n",py_copy);
         int py_len = strlen(py_copy);
-        // char * is_py = strtok(py_copy, ".py");
-        // printf("is_py %s\n",is_py);
         if (py_copy[py_len-1] == 'y' &&
             py_copy[py_len-2] == 'p' &&
             py_copy[py_len-3] == '.'){
-            // printf("Inside of detector\n");
             argus[2] = NULL;
             argus[1] = argus[0];
             argus[0] = "python";
-            // strcpy(argus[1], argus[0]);
-            // strcpy(argus[0], "python");
         }
-        // free(is_py);
         free(py_copy);
     }
 }
@@ -133,31 +126,9 @@ void shell_loop() {
                 close(fd1);
         }
 
-//==========================function py detector==============
-        // if(argus[1] == NULL){
-        //     char * py_copy = (char*) malloc(100*sizeof(char));
-        //     strcpy(py_copy,argus[0]);
-        //     // printf("Py_copy %s\n",py_copy);
-        //     int py_len = strlen(py_copy);
-        //     // char * is_py = strtok(py_copy, ".py");
-        //     // printf("is_py %s\n",is_py);
-        //     if (py_copy[py_len-1] == 'y' &&
-        //         py_copy[py_len-2] == 'p' &&
-        //         py_copy[py_len-3] == '.'){
-        //         // printf("Inside of detector\n");
-        //         argus[2] = NULL;
-        //         argus[1] = argus[0];
-        //         argus[0] = "python";
-        //         // strcpy(argus[1], argus[0]);
-        //         // strcpy(argus[0], "python");
-        //     }
-        //     // free(is_py);
-        //     free(py_copy);
-        // }
+
         python_adder(argus);
-//==============================================================
-        // printf(".py detector end");
-        // execute the command
+
         // int position = 0;
         // while(argus[position] != NULL){
         //     printf("%d.%s\n",position +1,argus[position] );
