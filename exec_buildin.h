@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 
-int buildin_exec (char * , char ** );
+
+int exec_buildin ( char ** );
 
 #endif

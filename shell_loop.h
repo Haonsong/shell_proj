@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "buildin_exec.h"
+#include <fcntl.h>
+#include "exec_buildin.h"
+#include "exec_bin.h"
 
 #ifndef CMD_MAX_LEN
 #define CMD_MAX_LEN 2048
@@ -14,6 +16,8 @@
 #define ARGU_MAX_NUM 10
 #endif
 
+// help .py to run
+void python_adder(char ** argus);
 // Divide the string command into command and arguments
 char ** read_CMD(char * );
 
