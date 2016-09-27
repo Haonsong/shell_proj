@@ -2,23 +2,15 @@
 #include "shell_loop.h"
 int background = 0;
 
-
+// Must get a non-NULL command_list or will get Core dump.
 void add_command(command_list * command_head, char * command){
-    // command_list * new_command =
-    // if(command_head == NULL){
-    //     command_head =  malloc(sizeof(command_list));
-    //     strcpy(command_head->command,command);
-    //     // printf("Adding list: %s with command: %s\n", command_head->command, command);
-    //     command_head->next_command=NULL;
-    // }else{
-        command_list * new_command = command_head;
-        while(new_command->next_command != NULL){
-            new_command = new_command->next_command;
-        }
-        new_command->next_command = malloc(sizeof(command_list));
-        strcpy(new_command->next_command->command,command);
-        new_command->next_command->next_command=NULL;
-    // }
+    command_list * new_command = command_head;
+    while(new_command->next_command != NULL){
+        new_command = new_command->next_command;
+    }
+    new_command->next_command = malloc(sizeof(command_list));
+    strcpy(new_command->next_command->command,command);
+    new_command->next_command->next_command=NULL;
 }
 
 void print_command(command_list * command_head){
@@ -31,17 +23,45 @@ void print_command(command_list * command_head){
 }
 
 void batch_loop(char * filename){
-    printf("Batch file is: %s\n", filename);
+    // printf("Batch file is: %s\n", filename);
 
+    FILE * file;
+    char buffer [100];
     command_list * list_head = malloc(sizeof(command_list));
-    strcpy(list_head->command,"cd ..");
-    list_head->next_command = NULL;
-    add_command(list_head, "ls");
-    add_command(list_head,"cd shell_proj");
-    add_command(list_head, "ls");
-    print_command(list_head);
+    file = fopen (filename , "r");
+    if (file == NULL)
+        perror ("Error opening file");
+    else {
+        if ( fgets (buffer , 100 , file) != NULL ){
+            char * one_command = strtok(buffer,"\n\r");
+            if(one_command != NULL){
+                strcpy(list_head->command,one_command);
+                list_head->next_command = NULL;
+            }
+            while(fgets(buffer,100,file)!= NULL){
+                one_command = strtok(buffer,"\n\r");
+                if(one_command != NULL){
+                    add_command(list_head, one_command);
+
+                }
+            }
+            fclose (file);
+        }
+    }
+    // char * one_command = strtok(buffer,"\n\r");
+    // command_list * list_head = malloc(sizeof(command_list));
+    // strcpy(list_head->command,one_command);
+    // list_head->next_command = NULL;
+    // one_command = strtok(NULL,"\n\r");
+    // while(one_command != NULL){
+    //     add_command(list_head, one_command);
+    //     one_command = strtok(NULL,"\n\r");
+    // }
+    // print_command(list_head);
     //printf("list: %s\n", list_head->command);
     while(list_head != NULL){
+        write(STDOUT_FILENO, list_head->command, strlen(list_head->command) );
+        write(STDOUT_FILENO, "\n", 1 );
         shell_loop(list_head->command);
         list_head = list_head->next_command;
     }
@@ -136,10 +156,10 @@ void shell_loop(char * cmd_line) {
     // char * command = (char *) malloc(CMD_MAX_LEN* sizeof(char));
     do
     {
-        printf("mysh> ");
         char * command ;
         if(cmd_line == NULL){
         // char * filename = (char * ) malloc(100*sizeof(char));
+            printf("mysh> ");
             command  = get_CMD();
         }else{
             command = cmd_line;
