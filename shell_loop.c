@@ -92,40 +92,9 @@ void shell_loop() {
     while(1)
     {
         printf("mysh> ");
-        char * filename = (char * ) malloc(100*sizeof(char));
+        // char * filename = (char * ) malloc(100*sizeof(char));
         char * command  = get_CMD();
         char ** argus = read_CMD(command);
-
-        // ============ get the > =================
-        int position_in_argus = 0;
-        while(argus[position_in_argus] != NULL){
-            if(strcmp(argus[position_in_argus], ">") == 0){
-                if(argus[position_in_argus+2] ==NULL){
-                    strcpy(filename, argus[position_in_argus+1]);
-                    output_file = 1;
-                    argus[position_in_argus] = NULL;
-                }
-            }
-            position_in_argus++;
-        }
-
-        printf("filename %s output_file: %d\n",filename,output_file );
-        // ========================================
-
-        if (output_file)
-        {
-
-                int fd1;
-                if ((fd1 = creat(filename, 0644)) < 0) {
-                        perror("Couldn't open the output file");
-                        exit(1);
-                }
-
-                dup2(fd1, STDOUT_FILENO); // 1 here can be replaced by STDOUT_FILENO
-                output_file = 0;
-                close(fd1);
-        }
-
 
         python_adder(argus);
 

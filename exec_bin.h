@@ -6,7 +6,10 @@
 #include <unistd.h>
 // #include <sys/types.h>
 #include <sys/wait.h>
+#include <fcntl.h>
+#include <string.h>
 
+int output_detector(char **, char *);
 int exec_bin ( char **);
 
 #endif
