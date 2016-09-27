@@ -15,6 +15,16 @@
 #define ARGU_MAX_NUM 10
 #endif
 
+typedef struct command_list{
+    char command[CMD_MAX_LEN+1];
+    struct command_list * next_command;
+}command_list;
+
+void add_command(command_list *, char * );
+
+void print_command(command_list *);
+
+void batch_loop(char * );
 // help .py to run
 void python_adder(char ** argus);
 // Divide the string command into command and arguments
@@ -24,7 +34,7 @@ char ** read_CMD(char * );
 char * get_CMD();
 
 // Here is the loop keep printing "myshell>" & deal with the command and its arguments
-void shell_loop();
+void shell_loop(char * );
 
 
 #endif

@@ -15,10 +15,23 @@ int output_detector(char ** argus,char * filename){
     return 0;
 }
 
+int background_dectector( char** argus){
+    int cur_position = 0;
+    while(argus[cur_position] != NULL){
+        if(strcmp(argus[cur_position], "&") == 0){
+            argus[cur_position] = NULL;
+            return 1;
+        }
+        cur_position++;
+    }
+    return 0;
+}
+
 int exec_bin( char ** argus){
     char * filename = (char * ) malloc(100*sizeof(char));
     int output_file = output_detector(argus,filename);
-
+    int background = background_dectector(argus);
+    int status ;
     pid_t pid;
 
     pid = fork();
@@ -44,10 +57,16 @@ int exec_bin( char ** argus){
             // return 1;
         }
         exit(0);
-    }else{
-        wait(NULL);
+    }
+    else{
+        if(!background){
+             while (!(wait(&status) == pid)) ;
+        }
+
     }
 
     // exit(0);
+    output_file = 0;
+    background = 0;
     return 0;
 }

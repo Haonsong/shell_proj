@@ -3,6 +3,51 @@
 int background = 0;
 
 
+void add_command(command_list * command_head, char * command){
+    // command_list * new_command =
+    // if(command_head == NULL){
+    //     command_head =  malloc(sizeof(command_list));
+    //     strcpy(command_head->command,command);
+    //     // printf("Adding list: %s with command: %s\n", command_head->command, command);
+    //     command_head->next_command=NULL;
+    // }else{
+        command_list * new_command = command_head;
+        while(new_command->next_command != NULL){
+            new_command = new_command->next_command;
+        }
+        new_command->next_command = malloc(sizeof(command_list));
+        strcpy(new_command->next_command->command,command);
+        new_command->next_command->next_command=NULL;
+    // }
+}
+
+void print_command(command_list * command_head){
+    command_list * cur_command = command_head;
+
+    do{
+        printf("%s ->", cur_command->command);
+        cur_command = cur_command->next_command;
+    }while(cur_command != NULL);
+}
+
+void batch_loop(char * filename){
+    printf("Batch file is: %s\n", filename);
+
+    command_list * list_head = malloc(sizeof(command_list));
+    strcpy(list_head->command,"cd ..");
+    list_head->next_command = NULL;
+    add_command(list_head, "ls");
+    add_command(list_head,"cd shell_proj");
+    add_command(list_head, "ls");
+    print_command(list_head);
+    //printf("list: %s\n", list_head->command);
+    while(list_head != NULL){
+        shell_loop(list_head->command);
+        list_head = list_head->next_command;
+    }
+
+}
+
 // Fun feature for python
 
 void python_adder(char ** argus){
@@ -87,13 +132,18 @@ char * get_CMD(){
 
 }
 
-void shell_loop() {
+void shell_loop(char * cmd_line) {
     // char * command = (char *) malloc(CMD_MAX_LEN* sizeof(char));
-    while(1)
+    do
     {
         printf("mysh> ");
+        char * command ;
+        if(cmd_line == NULL){
         // char * filename = (char * ) malloc(100*sizeof(char));
-        char * command  = get_CMD();
+            command  = get_CMD();
+        }else{
+            command = cmd_line;
+        }
         char ** argus = read_CMD(command);
 
         python_adder(argus);
@@ -107,9 +157,11 @@ void shell_loop() {
         int buildin = exec_buildin(argus);
         if(!buildin){
             if (exec_bin(argus)){
-                // wait(NULL);
+
                 fprintf(stderr, "Unknown error happened when executing %s\n", argus[0]);
             }
+
+
         }
         // if(output_file){
         //     output_file = 0;
@@ -128,5 +180,5 @@ void shell_loop() {
         // }
         free(argus);
         // free(command);
-    }
+    }while(cmd_line == NULL);
 }

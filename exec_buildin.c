@@ -32,6 +32,8 @@ int exec_buildin (char ** argus){
         }
     }else if (strcmp(argus[0], "exit") == 0){
         exit(0);
+    }else if (strcmp(argus[0], "wait") == 0){
+        wait(NULL);
     }else{
         return 0;
     }
