@@ -1,6 +1,5 @@
 
 #include "shell_loop.h"
-int background = 0;
 
 // Must get a non-NULL command_list or will get Core dump.
 void add_command(command_list * command_head, char * command){
@@ -48,17 +47,7 @@ void batch_loop(char * filename){
             fclose (file);
         }
     }
-    // char * one_command = strtok(buffer,"\n\r");
-    // command_list * list_head = malloc(sizeof(command_list));
-    // strcpy(list_head->command,one_command);
-    // list_head->next_command = NULL;
-    // one_command = strtok(NULL,"\n\r");
-    // while(one_command != NULL){
-    //     add_command(list_head, one_command);
-    //     one_command = strtok(NULL,"\n\r");
-    // }
-    // print_command(list_head);
-    //printf("list: %s\n", list_head->command);
+
     while(list_head != NULL){
         write(STDOUT_FILENO, list_head->command, strlen(list_head->command) );
         write(STDOUT_FILENO, "\n", 1 );
@@ -89,10 +78,10 @@ void python_adder(char ** argus){
 char ** read_CMD(char * command_in_string){
     // Counter may be ouputed in later work
     int cur_position = 0;
-    char * space = " ";
+    char * space = " \t\n\r";
     char * phaser = strtok(command_in_string,space);
     char ** arguments = (char **) malloc( (ARGU_MAX_NUM + 1) * sizeof(char *));
-    // char * command_temp;
+    
     // Make sure command array is successfully created
     if ( !arguments ){
         fprintf(stderr, "Can't malloc space for phasing command" );
@@ -106,19 +95,12 @@ char ** read_CMD(char * command_in_string){
             fprintf(stderr, "Number of arguments exceeding limitation: %d", ARGU_MAX_NUM );
             exit(1);
         }
-        // if (cur_position == 0) {
-        //     command_temp = phaser;
-        // }else{
-        //     arguments[cur_position-1] = phaser;
-        // }
         arguments[cur_position] = phaser;
         phaser = strtok(NULL, space);
         cur_position++ ;
     }
 
     arguments[cur_position] = NULL;
-    // strcpy(command_in_string, command_temp);
-    // free(command_in_string);
     return arguments;
 }
 
@@ -158,47 +140,24 @@ void shell_loop(char * cmd_line) {
     {
         char * command ;
         if(cmd_line == NULL){
-        // char * filename = (char * ) malloc(100*sizeof(char));
-            printf("mysh> ");
+            printf("mysh%d> ",CMD_MAX_LEN);
             command  = get_CMD();
         }else{
             command = cmd_line;
         }
         char ** argus = read_CMD(command);
 
+				// add python to .py
         python_adder(argus);
-
-        // int position = 0;
-        // while(argus[position] != NULL){
-        //     printf("%d.%s\n",position +1,argus[position] );
-        //     position++;
-        // }
 
         int buildin = exec_buildin(argus);
         if(!buildin){
             if (exec_bin(argus)){
-
                 fprintf(stderr, "Unknown error happened when executing %s\n", argus[0]);
             }
 
 
         }
-        // if(output_file){
-        //     output_file = 0;
-        //     close(fd1);
-        // }
-        // testing the cmd reader
-        // printf("Got command: %s build-in?: %d\n",command, buildin );
-        // int position = 0;
-        // while(argus[position] != NULL){
-        //     printf("%d.%s\n",position +1,argus[position] );
-        //     position++;
-        // }
-        // while (position > -1){
-        //     free (argus[position] );
-        //     position--;
-        // }
         free(argus);
-        // free(command);
     }while(cmd_line == NULL);
 }

@@ -1,3 +1,11 @@
+#ifndef CMD_MAX_LEN
+#define CMD_MAX_LEN 512
+#endif
+
+#ifndef ARGU_MAX_NUM
+#define ARGU_MAX_NUM 10
+#endif
+
 #ifndef SHELL_LOOP_H_
 #define  SHELL_LOOP_H_
 
@@ -6,14 +14,6 @@
 #include <string.h>
 #include "exec_buildin.h"
 #include "exec_bin.h"
-
-#ifndef CMD_MAX_LEN
-#define CMD_MAX_LEN 2048
-#endif
-
-#ifndef ARGU_MAX_NUM
-#define ARGU_MAX_NUM 10
-#endif
 
 typedef struct command_list{
     char command[CMD_MAX_LEN+1];
