@@ -1,5 +1,14 @@
 
 #include "shell_loop.h"
+#define EXIT 1
+
+void print_error_massage(int exit_code){
+    char error_message[30] = "A error has occurred\n";
+    write(STDERR_FILENO, error_message, strlen(error_message));
+    if(exit_code){
+        exit(1);
+    }
+}
 
 // Must get a non-NULL command_list or will get Core dump.
 void add_command(command_list * command_head, char * command){
@@ -29,7 +38,7 @@ void batch_loop(char * filename){
     command_list * list_head = malloc(sizeof(command_list));
     file = fopen (filename , "r");
     if (file == NULL)
-        perror ("Error opening file");
+        print_error_massage(EXIT);
     else {
         if ( fgets (buffer , 100 , file) != NULL ){
             char * one_command = strtok(buffer,"\n\r");
@@ -60,8 +69,8 @@ void batch_loop(char * filename){
 // Fun feature for python
 
 void python_adder(char ** argus){
-    if(argus[1] == NULL){
-        char * py_copy = (char*) malloc(100*sizeof(char));
+    if(argus[0] != NULL && argus[1] == NULL){
+        char * py_copy = (char*) malloc(CMD_MAX_LEN*sizeof(char));
         strcpy(py_copy,argus[0]);
         int py_len = strlen(py_copy);
         if (py_copy[py_len-1] == 'y' &&
@@ -81,7 +90,7 @@ char ** read_CMD(char * command_in_string){
     char * space = " \t\n\r";
     char * phaser = strtok(command_in_string,space);
     char ** arguments = (char **) malloc( (ARGU_MAX_NUM + 1) * sizeof(char *));
-    
+
     // Make sure command array is successfully created
     if ( !arguments ){
         fprintf(stderr, "Can't malloc space for phasing command" );
@@ -93,8 +102,9 @@ char ** read_CMD(char * command_in_string){
 
         if(cur_position >= ARGU_MAX_NUM - 1){
             fprintf(stderr, "Number of arguments exceeding limitation: %d", ARGU_MAX_NUM );
-            exit(1);
+            return NULL;
         }
+
         arguments[cur_position] = phaser;
         phaser = strtok(NULL, space);
         cur_position++ ;
@@ -109,6 +119,7 @@ char * get_CMD(){
     int position = 0;
     // Test the malloc is successful or not
     if (!command){
+        // Edit error here
         fprintf(stderr, "Can't malloc for reading input command\n" );
         exit(1);
     }
@@ -117,9 +128,15 @@ char * get_CMD(){
     while(position < CMD_MAX_LEN - 1){
         char c = getchar();
 
+
         // Reach the end of line
-        if (c == EOF || c == '\n') {
+        if (c == EOF || c == '\n') {//
+
+            if (position == 0) {
+                return " ";
+            }
             command[position] = '\0';
+
             return command;
         }
 
@@ -127,37 +144,53 @@ char * get_CMD(){
         position++ ;
 
     }
-
-    fprintf(stderr, "Command size exceeds the buff size: %d Bytes \n", CMD_MAX_LEN );
+    char c;
+    do{
+        c = getchar();
+    } while(c  !=  EOF && c != '\n');
+    // fprintf(stderr, "Command size exceeds the buff size: %d Bytes \n", CMD_MAX_LEN );
     free(command);
-    exit(1);
+    print_error_massage(0);
+    return NULL;
 
 }
 
 void shell_loop(char * cmd_line) {
-    // char * command = (char *) malloc(CMD_MAX_LEN* sizeof(char));
-    do
-    {
+    do{
         char * command ;
         if(cmd_line == NULL){
-            printf("mysh%d> ",CMD_MAX_LEN);
+            printf("mysh> ");
             command  = get_CMD();
         }else{
             command = cmd_line;
         }
-        char ** argus = read_CMD(command);
 
-				// add python to .py
+        // Directly skip this round if empty
+        if(command == NULL) continue;
+        int whitespace_counter= 0;
+        while(  command[whitespace_counter] == ' '||
+                command[whitespace_counter] == '\t' ){
+            whitespace_counter++;
+        }
+        if(strcmp(command," ") == 0 || whitespace_counter == strlen(command)) continue;
+
+        // Split up the command with space tab newline
+        char ** argus = read_CMD(command);
+        if(argus[0] == NULL) continue;
+
+		// add python to .py
         python_adder(argus);
 
+        // execute the command
         int buildin = exec_buildin(argus);
         if(!buildin){
             if (exec_bin(argus)){
-                fprintf(stderr, "Unknown error happened when executing %s\n", argus[0]);
+                // Print error and exit the child process
+                print_error_massage(EXIT);
+
             }
-
-
         }
+
         free(argus);
     }while(cmd_line == NULL);
 }

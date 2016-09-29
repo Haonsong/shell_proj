@@ -3,7 +3,7 @@
 #endif
 
 #ifndef ARGU_MAX_NUM
-#define ARGU_MAX_NUM 10
+#define ARGU_MAX_NUM 256
 #endif
 
 #ifndef SHELL_LOOP_H_
@@ -20,6 +20,7 @@ typedef struct command_list{
     struct command_list * next_command;
 }command_list;
 
+void print_error_massage(int);
 void add_command(command_list *, char * );
 
 void print_command(command_list *);
